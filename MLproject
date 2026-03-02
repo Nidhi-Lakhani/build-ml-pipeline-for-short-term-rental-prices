@@ -10,9 +10,9 @@ entry_points:
         type: str
         default: all
 
-      hydra_options:
-        description: Other configuration parameters to override
-        type: str
-        default: ''
+      # hydra_options:
+      #   description: Other configuration parameters to override
+      #   type: str
+      #   default: null
 
-    command: "python main.py main.steps=\\'{steps}\\' $(echo {hydra_options})"
+    command: "python main.py main.steps={steps}" # changed syntax to work for Windows
