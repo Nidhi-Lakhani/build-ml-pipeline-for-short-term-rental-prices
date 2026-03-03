@@ -2,6 +2,7 @@
 """
 This script splits the provided dataframe in test and remainder
 """
+import os
 import argparse
 import logging
 import pandas as pd
@@ -21,12 +22,14 @@ def go(args):
 
     # Download input artifact. This will also note that this script is using this
     # particular version of the artifact
+    # artifact_local_path = run.use_artifact(args.input).file()
     logger.info(f"Fetching artifact {args.input}")
-    artifact_local_path = run.use_artifact(args.input).file()
+    artifact_dir = run.use_artifact(args.input).download()
+    csv_files = os.listdir(artifact_dir)
+    csv_path = os.path.join(artifact_dir, csv_files[0])
+    df = pd.read_csv(csv_path)
 
-    df = pd.read_csv(artifact_local_path)
-
-    logger.info("Splitting trainval and test")
+    logger.info("Splitting train, val and test")
     trainval, test = train_test_split(
         df,
         test_size=args.test_size,
@@ -34,21 +37,20 @@ def go(args):
         stratify=df[args.stratify_by] if args.stratify_by != 'none' else None,
     )
 
-    # Save to output files
+    # Save to output files 
     for df, k in zip([trainval, test], ['trainval', 'test']):
         logger.info(f"Uploading {k}_data.csv dataset")
-        with tempfile.NamedTemporaryFile("w") as fp:
-
-            df.to_csv(fp.name, index=False)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            temp_path = os.path.join(tmp_dir, f"{k}_data.csv")
+            df.to_csv(temp_path, index=False)
 
             log_artifact(
                 f"{k}_data.csv",
                 f"{k}_data",
                 f"{k} split of dataset",
-                fp.name,
+                temp_path,
                 run,
             )
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Split test and remainder")
