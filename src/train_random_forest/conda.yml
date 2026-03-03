@@ -8,7 +8,7 @@ dependencies:
   - matplotlib=3.10.7
   - pandas=2.3.2
   - pip=24.3.1
-  - scikit-learn=1.7.2
   - pip:
       - mlflow==3.3.2
       - wandb==0.21.3
+      - scikit-learn==1.7.2 # using pip instead of conda to bypass windows firewall "safety error" for scipy .pyd file 
