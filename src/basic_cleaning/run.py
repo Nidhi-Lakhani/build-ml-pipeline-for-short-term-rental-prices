@@ -20,16 +20,16 @@ def go(args):
 
     # Download input artifact. This will also log that this script is using this
     # particular version of the artifact
-    artifact_dir = run.use_artifact(args.input_artifact).download() # using download() to have a safe path for windows -- otherwise it crashes due to colon
-    csv_path = os.path.join(artifact_dir, "sample1.csv")
-
     logger.info("Reading dataset")
-    df = pd.read_csv(csv_path)
+    artifact = run.use_artifact(args.input_artifact)
+    df = pd.read_csv(artifact.file())
 
     logger.info("Applying basic cleaning")
     idx = df["price"].between(args.min_price, args.max_price)
     df = df.loc[idx].copy()
     df["last_review"] = pd.to_datetime(df["last_review"])
+    idx = df['longitude'].between(-74.25, -73.50) & df['latitude'].between(40.5, 41.2)
+    df = df[idx].copy()
 
     logger.info("Saving cleaned dataset")
     df.to_csv("clean_sample.csv", index=False)

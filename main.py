@@ -43,7 +43,7 @@ def go(config: DictConfig):
                 env_manager="conda",
                 parameters={
                     "sample": config["etl"]["sample"],
-                    "artifact_name": "sample.csv",
+                    "artifact_name": "sample2.csv",
                     "artifact_type": "raw_data",
                     "artifact_description": "Raw file as downloaded"
                 },
@@ -68,8 +68,8 @@ def go(config: DictConfig):
                 os.path.join(hydra.utils.get_original_cwd(), "src", "data_check"),
                 "main",
                 parameters={
-                    "csv": "nidhi-lakhani-natwest-group/nyc_airbnb/clean_sample.csv:latest",
-                    "ref": "nidhi-lakhani-natwest-group/nyc_airbnb/clean_sample.csv:reference",
+                    "csv": "clean_sample.csv:latest",
+                    "ref": "clean_sample.csv:reference",
                     "kl_threshold": config["data_check"]["kl_threshold"],
                     "min_price": config['etl']['min_price'],
                     "max_price": config['etl']['max_price']
@@ -81,7 +81,7 @@ def go(config: DictConfig):
                 f"{config['main']['components_repository']}/train_val_test_split", 
                 "main",
                 parameters = {
-                    "input": "nidhi-lakhani-natwest-group/nyc_airbnb/clean_sample.csv:latest",
+                    "input": "clean_sample.csv:latest",
                     "test_size": config['modeling']['test_size'],
                     "random_seed": config['modeling']['random_seed'],
                     "stratify_by": config['modeling']['stratify_by']
@@ -102,7 +102,7 @@ def go(config: DictConfig):
                 os.path.join(hydra.utils.get_original_cwd(), "src", "train_random_forest"),
                 "main",
                 parameters={
-                    "trainval_artifact": "nidhi-lakhani-natwest-group/nyc_airbnb/trainval_data.csv:latest",
+                    "trainval_artifact": "trainval_data.csv:latest",
                     "val_size": config["modeling"]["val_size"],
                     "random_seed": config["modeling"]["random_seed"],
                     "stratify_by": config["modeling"]["stratify_by"],

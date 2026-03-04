@@ -1,4 +1,3 @@
-import os
 import pytest
 import pandas as pd
 import wandb
@@ -18,12 +17,10 @@ def data(request):
 
     # Download input artifact. This will also note that this script is using this
     # particular version of the artifact
+    data_path = run.use_artifact(request.config.option.csv).file()
 
-    # changing logic to work on Windows -- Udacity workspace is not working for me
-    artifact = run.use_artifact(request.config.option.csv)
-    artifact_dir = artifact.download()
-    filename = list(artifact.manifest.entries.keys())[0]
-    data_path = os.path.join(artifact_dir, filename)
+    if data_path is None:
+        pytest.fail("You must provide the --csv option on the command line")
 
     df = pd.read_csv(data_path)
 
@@ -36,18 +33,10 @@ def ref_data(request):
 
     # Download input artifact. This will also note that this script is using this
     # particular version of the artifact
-    # data_path = run.use_artifact(request.config.option.ref).file()
+    data_path = run.use_artifact(request.config.option.ref).file()
 
-    # if data_path is None:
-    #     pytest.fail("You must provide the --ref option on the command line")
-
-    # df = pd.read_csv(data_path)
-
-    artifact = run.use_artifact(request.config.option.ref)
-    artifact_dir = artifact.download()
-
-    filename = list(artifact.manifest.entries.keys())[0]
-    data_path = os.path.join(artifact_dir, filename)
+    if data_path is None:
+        pytest.fail("You must provide the --ref option on the command line")
 
     df = pd.read_csv(data_path)
 
